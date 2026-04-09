@@ -2055,6 +2055,15 @@
          sprintf(opts.dsp_out_file, "%s/%s", wav_file_directory, dsp_filename);
          fprintf (stderr, "Saving DSP Structured or M17 Float Stream Output to %s\n", opts.dsp_out_file);
          opts.use_dsp_output = 1;
+         opts.udp_sockfd_frames = -1;
+         opts.udp_sockfd_frames = socket(AF_INET, SOCK_DGRAM, 0);
+         if (opts.udp_sockfd_frames >= 0) {
+          memset(&opts.udp_serveraddr, 0, sizeof(opts.udp_serveraddr));
+          opts.udp_serveraddr.sin_family = AF_INET;
+          opts.udp_serveraddr.sin_port = htons(52020); // Destination UDP Port
+          opts.udp_serveraddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Destination IP
+        }
+
          break;
  
          case 'z':

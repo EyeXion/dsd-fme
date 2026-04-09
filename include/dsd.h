@@ -55,6 +55,8 @@
 #include <math.h>
 #include <mbelib.h>
 #include <sndfile.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 #include "p25p1_heuristics.h"
 
@@ -434,6 +436,10 @@ typedef struct
   int tcp_portno;
   char tcp_hostname[1024];
   SNDFILE *tcp_file_in;
+
+  //CODE ELIES !!! Socket pour output trames brutes
+  int udp_sockfd_frames;
+  struct sockaddr_in udp_serveraddr;
 
   //wav file sample rate, interpolator and decimator
   int wav_sample_rate;

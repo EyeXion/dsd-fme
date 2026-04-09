@@ -8,6 +8,10 @@
 
 #include "dsd.h"
 #include "dmr_const.h"
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <string.h>
 
 // #define PRINT_AMBE72 //enable to view 72-bit AMBE codewords
 
@@ -232,17 +236,23 @@ void dmrMS (dsd_opts * opts, dsd_state * state)
   }
 
   //'DSP' output to file
-  if (opts->use_dsp_output == 1)
+  if (opts->use_dsp_output == 1 && opts->udp_sockfd_frames >= 0)
   {
-    FILE * pFile; //file pointer
-    pFile = fopen (opts->dsp_out_file, "a");
-    fprintf (pFile, "\n%d 10 ", state->currentslot+1); //0x10 for "voice burst", forced to slot 1
+    char udp_buf[512];
+    int offset = 0;
+    
+    //FILE * pFile; //file pointer
+    //pFile = fopen (opts->dsp_out_file, "a");
+    //fprintf (pFile, "\n%d 10 ", state->currentslot+1); //0x10 for "voice burst", forced to slot 1
+    offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%d 10 ", state->currentslot+1);
     for (i = 6; i < 72; i++) //33 bytes, no CACH
     {
       int dsp_byte = (state->dmr_stereo_payload[i*2] << 2) | state->dmr_stereo_payload[i*2 + 1];
-      fprintf (pFile, "%X", dsp_byte);
+      //fprintf (pFile, "%X", dsp_byte);
+      offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%X", dsp_byte);
     }
-    fclose (pFile);
+    sendto(opts->udp_sockfd_frames, udp_buf, offset, 0, (struct sockaddr *)&opts->udp_serveraddr, sizeof(opts->udp_serveraddr));
+    //fclose (pFile);
   }
 
   state->dmr_ms_mode = 1;
@@ -539,15 +549,23 @@ void dmrMSBootstrap (dsd_opts * opts, dsd_state * state)
   //'DSP' output to file
   if (opts->use_dsp_output == 1)
   {
-    FILE * pFile; //file pointer
-    pFile = fopen (opts->dsp_out_file, "a");
-    fprintf (pFile, "\n%d 10 ", state->currentslot+1); //0x10 for "voice burst", force to slot 1
+
+
+    char udp_buf[512];
+    int offset = 0;
+    
+    //FILE * pFile; //file pointer
+    //pFile = fopen (opts->dsp_out_file, "a");
+    //fprintf (pFile, "\n%d 10 ", state->currentslot+1); //0x10 for "voice burst", forced to slot 1
+    offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%d 10 ", state->currentslot+1);
     for (i = 6; i < 72; i++) //33 bytes, no CACH
     {
       int dsp_byte = (state->dmr_stereo_payload[i*2] << 2) | state->dmr_stereo_payload[i*2 + 1];
-      fprintf (pFile, "%X", dsp_byte);
+      //fprintf (pFile, "%X", dsp_byte);
+      offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%X", dsp_byte);
     }
-    fclose (pFile);
+    sendto(opts->udp_sockfd_frames, udp_buf, offset, 0, (struct sockaddr *)&opts->udp_serveraddr, sizeof(opts->udp_serveraddr));
+    //fclose (pFile);
   }
 
   fprintf (stderr, "%s ", timestr);
