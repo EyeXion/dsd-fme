@@ -221,7 +221,7 @@ void dmr_data_burst_handler(dsd_opts * opts, dsd_state * state, uint8_t info[196
     char udp_buf[512];
       int offset = 0;
 
-      offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%d 98 ", slot+1);
+      offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "\n%d 98 ", slot+1);
       for (i = 0; i < 6; i++) 
       {
         int cach_byte = (state->dmr_stereo_payload[i*2] << 2) | state->dmr_stereo_payload[i*2 + 1];
@@ -232,7 +232,7 @@ void dmr_data_burst_handler(dsd_opts * opts, dsd_state * state, uint8_t info[196
       sendto(opts->udp_sockfd_frames, udp_buf, offset, 0, (struct sockaddr *)&opts->udp_serveraddr, sizeof(opts->udp_serveraddr));
 
       offset = 0; 
-      offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%d 10 ", slot+1);
+      offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "\n%d 10 ", slot+1);
       for (i = 6; i < 72; i++) 
       {
         int dsp_byte = (state->dmr_stereo_payload[i*2] << 2) | state->dmr_stereo_payload[i*2 + 1];

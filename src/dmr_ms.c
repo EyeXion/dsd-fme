@@ -244,7 +244,7 @@ void dmrMS (dsd_opts * opts, dsd_state * state)
     //FILE * pFile; //file pointer
     //pFile = fopen (opts->dsp_out_file, "a");
     //fprintf (pFile, "\n%d 10 ", state->currentslot+1); //0x10 for "voice burst", forced to slot 1
-    offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%d 10 ", state->currentslot+1);
+    offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "\n%d 10 ", state->currentslot+1);
     for (i = 6; i < 72; i++) //33 bytes, no CACH
     {
       int dsp_byte = (state->dmr_stereo_payload[i*2] << 2) | state->dmr_stereo_payload[i*2 + 1];
@@ -557,7 +557,7 @@ void dmrMSBootstrap (dsd_opts * opts, dsd_state * state)
     //FILE * pFile; //file pointer
     //pFile = fopen (opts->dsp_out_file, "a");
     //fprintf (pFile, "\n%d 10 ", state->currentslot+1); //0x10 for "voice burst", forced to slot 1
-    offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "%d 10 ", state->currentslot+1);
+    offset += snprintf(udp_buf + offset, sizeof(udp_buf) - offset, "\n%d 10 ", state->currentslot+1);
     for (i = 6; i < 72; i++) //33 bytes, no CACH
     {
       int dsp_byte = (state->dmr_stereo_payload[i*2] << 2) | state->dmr_stereo_payload[i*2 + 1];
